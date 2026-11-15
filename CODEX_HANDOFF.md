@@ -5,6 +5,17 @@ files and Git status. This file describes the final state of the first working
 session; some migration notes and older README passages describe source counts
 before later user edits.
 
+## Subsequent update: GitLab CI
+
+The user requested GitLab CI/CD for continuous builds. `.gitlab-ci.yml` now uses
+`node:24-bookworm-slim`, lockfile-based `npm ci`, npm download caching in `.npm/`,
+and `npm run build`. Successful `dist/` output is saved as a job artifact with a
+one-week expiry. Branch/tag pushes and merge requests trigger builds; an open MR
+suppresses the duplicate branch push pipeline. Manual web runs are supported.
+No hosting deployment job or credentials were added. GitLab Runner execution
+has not been verified from this workspace. GitLab is now an explicit requested
+CI destination; earlier GitHub recommendations below are historical plans.
+
 ## Objective and agreed direction
 
 Replace the preliminary WordPress site at https://valagamba.net/ with a

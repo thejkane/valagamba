@@ -1,5 +1,26 @@
 # Valagamba
 
+## GitLab continuous builds
+
+`.gitlab-ci.yml` builds the static site on branch/tag pushes and merge requests.
+When a branch has an open merge request, its push uses the merge request pipeline
+instead of creating a duplicate branch pipeline. Manual runs from GitLab's
+pipeline screen are also supported.
+
+The job uses Node 24, installs the committed lockfile with `npm ci`, runs
+`npm run build`, and saves `dist/` as a downloadable artifact with a one-week
+expiry (GitLab may retain the latest successful artifact according to project
+settings). npm downloads are cached using a key based on `package-lock.json`.
+
+To activate it, commit and push the configuration to your GitLab project and
+ensure the project has an available GitLab Runner supporting Docker images.
+View results under **Build > Pipelines** and download the `build_site` job's
+artifacts. No deployment credentials are needed. This pipeline builds artifacts;
+publishing them to GoDaddy, Cloudflare, or GitLab Pages is not configured.
+
+The configuration follows [GitLab's CI/CD YAML documentation](https://docs.gitlab.com/ci/yaml/)
+and [npm caching guidance](https://docs.gitlab.com/ci/caching/#cache-nodejs-dependencies).
+
 For future Codex sessions, start with [CODEX_HANDOFF.md](CODEX_HANDOFF.md).
 It records the current organization and overrides historical counts in migration
 notes where later editorial changes moved lessons between collections.
