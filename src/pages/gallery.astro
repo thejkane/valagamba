@@ -1,0 +1,86 @@
+---
+import { getEntry } from 'astro:content';
+import SiteHeader from '../components/SiteHeader.astro';
+import SiteFooter from '../components/SiteFooter.astro';
+import '../styles/global.css';
+import '../styles/gallery.css';
+const entry = await getEntry('gallery', 'aranya');
+if (!entry || entry.data.draft) throw new Error('Published gallery content is required.');
+const { title, images } = entry.data;
+---
+<!doctype html>
+<html lang="si">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content={title} />
+    <meta name="theme-color" content="#233e34" />
+    <link rel="canonical" href="https://valagamba.net/gallery/" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta property="og:title" content="ගැලරිය · Valagamba" />
+    <meta property="og:description" content={title} />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://valagamba.net/gallery/" />
+    <title>ගැලරිය · Valagamba</title>
+  </head>
+  <body>
+    <a class="skip-link" href="#main">ප්‍රධාන අන්තර්ගතයට යන්න</a>
+    <SiteHeader />
+    <main id="main" class="container gallery-main">
+      <nav class="gallery-breadcrumbs" aria-label="පිටු මාර්ගය"><a href="/">මුල් පිටුව</a><span aria-hidden="true">/</span><span aria-current="page">ගැලරිය</span></nav>
+      <header class="gallery-intro"><p class="eyebrow" lang="en">Around the Aranya</p><h1>ගැලරිය<span class="title-dot">.</span></h1><p>{title}</p><p class="gallery-count">ඡායාරූප {images.length}</p></header>
+      <div class="photo-grid">
+        {images.map((photo, index) => <figure class="photo-card"><a class="photo-link" id={`photo-${index + 1}`} href={photo.src} data-index={index} data-alt={photo.alt} aria-label={`${photo.alt} — open photograph ${index + 1}`} lang="en"><span class="photo-frame"><img src={photo.thumbnail} alt={photo.alt} width={photo.width} height={photo.height} loading={index < 3 ? 'eager' : 'lazy'} decoding="async" /></span><span class="photo-footer"><span>{String(index + 1).padStart(2, '0')}</span><span aria-hidden="true">↗</span></span></a></figure>)}
+      </div>
+    </main>
+    <dialog class="photo-viewer" aria-labelledby="viewer-title">
+      <div class="viewer-toolbar"><h2 id="viewer-title" class="sr-only">ඡායාරූපය</h2><span id="viewer-count" aria-live="polite"></span><button type="button" id="viewer-close" aria-label="වසන්න" autofocus>✕</button></div>
+      <figure class="viewer-figure"><img id="viewer-image" alt="" /><figcaption id="viewer-caption" lang="en"></figcaption></figure>
+      <div class="viewer-controls"><button type="button" id="viewer-prev" aria-label="පෙර ඡායාරූපය">←</button><a id="viewer-original" href="/gallery/">සම්පූර්ණ රූපය <span aria-hidden="true">↗</span></a><button type="button" id="viewer-next" aria-label="ඊළඟ ඡායාරූපය">→</button></div>
+    </dialog>
+    <SiteFooter />
+    <script>
+      const dialog = document.querySelector<HTMLDialogElement>('.photo-viewer');
+      const links = Array.from(document.querySelectorAll<HTMLAnchorElement>('.photo-link'));
+      const picture = document.querySelector<HTMLImageElement>('#viewer-image');
+      const caption = document.querySelector<HTMLElement>('#viewer-caption');
+      const count = document.querySelector<HTMLElement>('#viewer-count');
+      const original = document.querySelector<HTMLAnchorElement>('#viewer-original');
+      const close = document.querySelector<HTMLButtonElement>('#viewer-close');
+      let current = 0;
+      let opener: HTMLAnchorElement | undefined;
+      function show(index: number) {
+        current = (index + links.length) % links.length;
+        const link = links[current];
+        if (picture) { picture.src = link.href; picture.alt = link.dataset.alt || ''; }
+        if (caption) caption.textContent = link.dataset.alt || '';
+        if (count) count.textContent = `${current + 1} / ${links.length}`;
+        if (original) original.href = link.href;
+      }
+      if (dialog && typeof dialog.showModal === 'function') {
+        links.forEach((link, index) => link.addEventListener('click', (event) => {
+          if (event.ctrlKey || event.metaKey || event.shiftKey || event.altKey) return;
+          event.preventDefault();
+          opener = link;
+          show(index);
+          dialog.showModal();
+          document.documentElement.classList.add('viewer-open');
+          close?.focus();
+        }));
+        close?.addEventListener('click', () => dialog.close());
+        document.querySelector('#viewer-prev')?.addEventListener('click', () => show(current - 1));
+        document.querySelector('#viewer-next')?.addEventListener('click', () => show(current + 1));
+        dialog.addEventListener('keydown', (event) => {
+          if (event.key === 'ArrowLeft') { event.preventDefault(); show(current - 1); }
+          if (event.key === 'ArrowRight') { event.preventDefault(); show(current + 1); }
+        });
+        dialog.addEventListener('click', (event) => { if (event.target === dialog) dialog.close(); });
+        dialog.addEventListener('close', () => {
+          document.documentElement.classList.remove('viewer-open');
+          opener?.focus({ preventScroll: true });
+          picture?.removeAttribute('src');
+        });
+      }
+    </script>
+  </body>
+</html>

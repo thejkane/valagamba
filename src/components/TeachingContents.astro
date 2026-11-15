@@ -1,0 +1,34 @@
+---
+import type { CollectionEntry } from 'astro:content';
+
+interface Props {
+  teachings: CollectionEntry<'teachings'>[];
+  scroll: boolean;
+  label?: string;
+}
+const { teachings, scroll, label } = Astro.props;
+type Lesson = { teaching: CollectionEntry<'teachings'>; number: number };
+type MenuItem = { parent?: string; lessons: Lesson[] };
+const items: MenuItem[] = [];
+teachings.forEach((teaching, index) => {
+  const parent = teaching.data.menuParent;
+  const previous = items.at(-1);
+  if (parent && previous?.parent === parent) {
+    previous.lessons.push({ teaching, number: index + 1 });
+  } else {
+    items.push({ parent, lessons: [{ teaching, number: index + 1 }] });
+  }
+});
+---
+<ol class:list={['contents-list', { 'contents-scroll': scroll }]} tabindex={scroll ? 0 : undefined} aria-label={label}>
+  {items.map((item) => item.parent ? (
+    <li class="contents-parent">
+      <span class="contents-parent-label">{item.parent}</span>
+      <ol class="contents-parts" aria-label={item.parent}>
+        {item.lessons.map(({ teaching }) => <li><a href={`#teaching-${teaching.data.order}`}>{teaching.data.menuLabel || teaching.data.title}</a></li>)}
+      </ol>
+    </li>
+  ) : item.lessons.map(({ teaching, number }) => (
+    <li value={number}><a href={`#teaching-${teaching.data.order}`}><span aria-hidden="true">{String(number).padStart(2, '0')}</span>{teaching.data.title}</a></li>
+  )))}
+</ol>

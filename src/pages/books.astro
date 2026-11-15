@@ -1,0 +1,91 @@
+---
+import { getCollection } from 'astro:content';
+import SiteHeader from '../components/SiteHeader.astro';
+import SiteFooter from '../components/SiteFooter.astro';
+import '../styles/global.css';
+import '../styles/books.css';
+
+const books = (await getCollection('books', ({ data }) => !data.draft)).sort((a, b) => a.data.order - b.data.order);
+---
+<!doctype html>
+<html lang="si">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="විශේෂ විදර්ශනා කෘති — සිංහල සහ ඉංග්‍රීසි ධර්ම කෘති, PDF සහ ශ්‍රව්‍ය පැහැදිලිකිරීම්." />
+    <meta name="theme-color" content="#233e34" />
+    <link rel="canonical" href="https://valagamba.net/books/" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta property="og:title" content="විශේෂ විදර්ශනා කෘති · Valagamba" />
+    <meta property="og:description" content="Dhamma books in Sinhala and English, with PDF files and audio explanations." />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://valagamba.net/books/" />
+    <title>විශේෂ විදර්ශනා කෘති · Valagamba</title>
+  </head>
+  <body>
+    <a class="skip-link" href="#main">ප්‍රධාන අන්තර්ගතයට යන්න</a>
+    <SiteHeader />
+    <main id="main" class="books-main container">
+      <nav class="books-breadcrumbs" aria-label="පිටු මාර්ගය"><a href="/">මුල් පිටුව</a><span aria-hidden="true">/</span><span aria-current="page">කෘති</span></nav>
+      <header class="books-intro">
+        <p class="eyebrow" lang="en">Read & reflect</p>
+        <h1>විශේෂ විදර්ශනා කෘති<span class="title-dot">.</span></h1>
+        <p>සිංහල සහ ඉංග්‍රීසි ධර්ම කෘති එකතුව.</p>
+        <p class="books-total"><span>කෘති {books.length}</span><span aria-hidden="true">·</span><span lang="en">PDF</span></p>
+      </header>
+      <div class="library-tools books-tools" hidden>
+        <div class="filters" role="group" aria-label="කෘති භාෂාව">
+          <button type="button" data-language="all" aria-pressed="true">සියල්ල</button>
+          <button type="button" data-language="si" aria-pressed="false">සිංහල</button>
+          <button type="button" data-language="en" aria-pressed="false" lang="en">English</button>
+        </div>
+        <label class="search-box"><span aria-hidden="true">⌕</span><span class="sr-only">කෘති සොයන්න</span><input id="book-search" type="search" placeholder="කෘති සොයන්න…" autocomplete="off" /></label>
+      </div>
+      <div class="books-grid">
+        {books.map(({ id, data }) => (
+          <article class:list={['book-card', { 'book-with-audio': data.audio.length > 0 }]} id={`book-${id}`} data-language={data.language} data-search={`${data.title} ${data.credit || ''}`}>
+            <div class="book-card-top"><span class="book-index" aria-hidden="true">{String(data.order).padStart(2, '0')}</span><span class="book-format"><span lang="en">PDF</span> · {data.language === 'en' ? <span lang="en">English</span> : 'සිංහල'}</span></div>
+            <h2 lang={data.language}><a href={data.viewUrl || data.pdfUrl}>{data.title}</a></h2>
+            {data.credit && <p class="book-credit" lang="en">{data.credit}</p>}
+            <div class="book-actions"><a class="button button-primary" href={data.viewUrl || data.pdfUrl} aria-label={`${data.title} — PDF කියවන්න`}>කියවන්න <span aria-hidden="true">↗</span></a><a class="text-link" href={data.pdfUrl} download aria-label={`${data.title} — PDF බාගත කරන්න`}>බාගත කරන්න <span aria-hidden="true">↓</span></a></div>
+            {data.audio.length > 0 && <details class="book-audio" open><summary>ශ්‍රව්‍ය පැහැදිලිකිරීම් ({data.audio.length})</summary><div class="book-audio-grid">{data.audio.map((clip) => <section class="book-audio-clip"><h3>{clip.title}</h3><audio controls preload="none" aria-label={`${data.title} — ${clip.title}`} src={clip.audioUrl}><a href={clip.audioUrl}>ශ්‍රව්‍ය ගොනුව විවෘත කරන්න</a></audio><a class="text-link" href={clip.audioUrl}>ශ්‍රව්‍ය ගොනුව <span aria-hidden="true">↗</span></a></section>)}</div></details>}
+          </article>
+        ))}
+      </div>
+      <p class="empty-state" hidden>ගැළපෙන කෘති හමු නොවීය. වෙනත් වචනයක් භාවිත කරන්න.</p>
+      <p class="sr-only" id="book-status" role="status" aria-live="polite"></p>
+    </main>
+    <SiteFooter />
+    <script>
+      const tools = document.querySelector<HTMLElement>('.books-tools');
+      const search = document.querySelector<HTMLInputElement>('#book-search');
+      const buttons = document.querySelectorAll<HTMLButtonElement>('button[data-language]');
+      const cards = document.querySelectorAll<HTMLElement>('.book-card');
+      const empty = document.querySelector<HTMLElement>('.empty-state');
+      const status = document.querySelector<HTMLElement>('#book-status');
+      let language = 'all';
+      const normalize = (text: string) => text.normalize('NFC').toLocaleLowerCase().trim();
+      function update() {
+        let count = 0;
+        cards.forEach((card) => {
+          const matches = (language === 'all' || card.dataset.language === language) && normalize(card.dataset.search || '').includes(normalize(search?.value || ''));
+          card.hidden = !matches;
+          if (matches) count++;
+          else card.querySelectorAll('audio').forEach((audio) => audio.pause());
+        });
+        if (empty) empty.hidden = count > 0;
+        if (status) status.textContent = `කෘති ${count}`;
+      }
+      buttons.forEach((button) => button.addEventListener('click', () => {
+        language = button.dataset.language || 'all';
+        buttons.forEach((item) => item.setAttribute('aria-pressed', String(item === button)));
+        update();
+      }));
+      search?.addEventListener('input', update);
+      if (tools) tools.hidden = false;
+      document.querySelectorAll('audio').forEach((audio) => audio.addEventListener('play', () => {
+        document.querySelectorAll('audio').forEach((other) => { if (other !== audio) other.pause(); });
+      }));
+    </script>
+  </body>
+</html>

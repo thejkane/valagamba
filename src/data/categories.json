@@ -1,0 +1,65 @@
+[
+  {
+    "title": "මුලික විපස්සනා ක්‍රම",
+    "english": "Foundations of Vipassana",
+    "path": "/basic-vipassana/",
+    "group": "meditation",
+    "local": true
+  },
+  {
+    "title": "විපස්සනා දේශනා",
+    "english": "Vipassana teachings",
+    "path": "/vipassana-dhamma/",
+    "group": "meditation",
+    "local": true
+  },
+  {
+    "title": "සතිය දේශනා",
+    "english": "Mindfulness",
+    "path": "/sathiya/",
+    "group": "meditation",
+    "local": true
+  },
+  {
+    "title": "ගැඹුරු දහම් කරුණු",
+    "english": "Further Dhamma study",
+    "path": "/advance-dhamma/",
+    "group": "study",
+    "local": true
+  },
+  {
+    "title": "අභිධර්ම දේශනා",
+    "english": "Abhidhamma teachings",
+    "path": "/abhidhamma-deshana/",
+    "group": "study",
+    "local": true
+  },
+  {
+    "title": "අභිධර්මය හා විපස්සනාව",
+    "english": "Abhidhamma & Vipassana · Video",
+    "path": "/abhiandvipassana/",
+    "group": "study",
+    "local": true
+  },
+  {
+    "title": "අභිධර්මය තුලින් විදර්ශනාව",
+    "english": "Vipassana through Abhidhamma",
+    "path": "/vidarshana-using-abhidhamma/",
+    "group": "study",
+    "local": true
+  },
+  {
+    "title": "කෙටි දේශනා",
+    "english": "Short teachings",
+    "path": "/short-discussions/",
+    "group": "meditation",
+    "local": true
+  },
+  {
+    "title": "වෙනත් දේශනා",
+    "english": "Other teachings",
+    "path": "/other-dhamma/",
+    "group": "study",
+    "local": true
+  }
+]
