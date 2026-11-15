@@ -1,4 +1,5 @@
 ---
+import { withBase } from '../utils/paths';
 import { getCollection } from 'astro:content';
 import SiteHeader from '../components/SiteHeader.astro';
 import SiteFooter from '../components/SiteFooter.astro';
@@ -14,19 +15,19 @@ const books = (await getCollection('books', ({ data }) => !data.draft)).sort((a,
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="description" content="විශේෂ විදර්ශනා කෘති — සිංහල සහ ඉංග්‍රීසි ධර්ම කෘති, PDF සහ ශ්‍රව්‍ය පැහැදිලිකිරීම්." />
     <meta name="theme-color" content="#233e34" />
-    <link rel="canonical" href="https://valagamba.net/books/" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="canonical" href={new URL(withBase('/books/'), Astro.site).href} />
+    <link rel="icon" type="image/svg+xml" href={withBase('/favicon.svg')} />
     <meta property="og:title" content="විශේෂ විදර්ශනා කෘති · Valagamba" />
     <meta property="og:description" content="Dhamma books in Sinhala and English, with PDF files and audio explanations." />
     <meta property="og:type" content="website" />
-    <meta property="og:url" content="https://valagamba.net/books/" />
+    <meta property="og:url" content={new URL(withBase('/books/'), Astro.site).href} />
     <title>විශේෂ විදර්ශනා කෘති · Valagamba</title>
   </head>
   <body>
     <a class="skip-link" href="#main">ප්‍රධාන අන්තර්ගතයට යන්න</a>
     <SiteHeader />
     <main id="main" class="books-main container">
-      <nav class="books-breadcrumbs" aria-label="පිටු මාර්ගය"><a href="/">මුල් පිටුව</a><span aria-hidden="true">/</span><span aria-current="page">කෘති</span></nav>
+      <nav class="books-breadcrumbs" aria-label="පිටු මාර්ගය"><a href={withBase('/')}>මුල් පිටුව</a><span aria-hidden="true">/</span><span aria-current="page">කෘති</span></nav>
       <header class="books-intro">
         <p class="eyebrow" lang="en">Read & reflect</p>
         <h1>විශේෂ විදර්ශනා කෘති<span class="title-dot">.</span></h1>

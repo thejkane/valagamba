@@ -5,19 +5,37 @@ files and Git status. This file describes the final state of the first working
 session; some migration notes and older README passages describe source counts
 before later user edits.
 
-## Subsequent update: GitHub Actions
+## Latest update: GitHub Pages deployment (2026-11-15)
 
-The user clarified that the remote repository is GitHub, not GitLab. The
-GitLab configuration was removed and replaced by `.github/workflows/build.yml`.
-It uses GitHub-hosted Ubuntu, Node 24, `npm ci`, lockfile-based npm caching,
-and `npm run build`. Successful `dist/` output is uploaded as a seven-day
-artifact. Pushes, pull requests, and manual dispatch trigger runs; newer runs
-cancel older in-progress runs for the same Git ref. Official checkout,
-setup-node, and upload-artifact actions are used, with read-only repository
-permissions. No custom secrets or hosting deployment job were added.
-GitHub-hosted execution has not yet been verified from this workspace; commit
-and push the workflow and check the Actions tab. Local YAML parsing and the
-production build were checked. GitHub is the current CI destination.
+User could not access the site after a successful build. Inspection found the
+local workflow only uploaded an ordinary artifact; it never deployed Pages.
+Re-running that old workflow could not publish the website.
+
+The workflow now builds every push/PR and supports manual dispatch, using Node
+24 and official GitHub actions. Default-branch non-PR runs also configure Pages,
+upload a special Pages artifact, and deploy via a dependent `deploy` job with
+`pages: write`, `id-token: write`, and the `github-pages` environment. Other refs
+and PRs build without deploying. No custom secrets or GoDaddy/DNS changes.
+
+Remote observed: `git@github.com:thejkane/valagamba.git`. Expected default Pages
+URL: `https://thejkane.github.io/valagamba/`; the actual deployment output is
+canonical if custom-domain settings differ. The user reported selecting GitHub
+Actions as the Pages source. Repository/environment settings and successful
+live deployment have not been independently verified.
+
+`astro.config.mjs` now reads `SITE_URL` and `BASE_PATH`, populated from
+`actions/configure-pages` outputs when deploying. `src/utils/paths.ts` exports
+`withBase()`, used for local links and images throughout the Astro templates.
+Canonical/OG URLs derive from the active deployment. Without variables, the
+site still builds for `/` at `https://valagamba.net`. Preserve base-path support
+when adding links; do not prefix external recordings or fragment-only anchors.
+
+Both subpath and root builds were checked locally, along with generated local
+links and assets. GitHub-hosted deployment remains unverified until the user
+commits/pushes these changes and sees the deploy job succeed. A normal build
+artifact is not itself a hosted preview. This supersedes older statements below
+that no GitHub deployment job exists; Cloudflare/R2 and production cutover are
+still only plans.
 
 ## Objective and agreed direction
 

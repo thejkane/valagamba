@@ -1,24 +1,41 @@
 # Valagamba
 
-## GitHub continuous builds
+## GitHub builds and Pages preview
 
-`.github/workflows/build.yml` builds the static site on pushes and pull requests.
-Manual runs are available from the **Actions** tab once the workflow is on the
-repository's default branch. A newer run cancels an older in-progress run for
-that same branch or pull request.
+`.github/workflows/build.yml` builds on pushes and pull requests, and supports
+manual runs from the Actions tab. It installs locked dependencies with Node 24,
+caches npm downloads, builds the site, and saves a seven-day downloadable artifact.
 
-The job uses a GitHub-hosted Ubuntu runner and Node 24, installs the committed
-lockfile with `npm ci`, runs `npm run build`, and uploads `dist/` as an artifact
-retained for seven days. npm downloads are cached based on `package-lock.json`.
+Pushes or manual runs on the repository's default branch also upload the special
+Pages artifact and run **Deploy GitHub Pages**. Pull requests, tags, and other
+branches build without publishing. The deploy job uses the `github-pages`
+environment and the required `pages: write` / `id-token: write` permissions.
+No custom secrets are needed.
 
-Commit and push the workflow to your GitHub repository, then open **Actions >
-Build site** to see the result. Download the `valagamba-<commit SHA>` artifact
-from a successful run. If Actions is disabled, enable it in **Settings > Actions >
-General**, allowing the official `actions/*` actions used by the workflow.
-No custom secrets or self-hosted runner are needed. Hosting deployment remains
-unconfigured; this workflow builds and stores the static website.
+Set **Settings > Pages > Build and deployment > Source** to **GitHub Actions**.
+Commit and push the workflow and source changes to the default branch, then check
+**Actions > Build site**. Both **Build static site** and **Deploy GitHub Pages**
+must succeed before the site is accessible. A green build alone is insufficient.
+Use the deployment URL shown by GitHub, normally:
+`https://thejkane.github.io/valagamba/` for this repository. If deployment waits
+for environment approval, review the `github-pages` environment in GitHub.
 
-See [GitHub's workflow syntax documentation](https://docs.github.com/en/actions/reference/workflows-and-actions/workflow-syntax).
+The `configure-pages` action supplies `SITE_URL` and `BASE_PATH` during publishing.
+`astro.config.mjs` reads them; `src/utils/paths.ts` applies the base to local
+navigation and public images. Without those variables, local development and
+root-domain builds continue using `/` and `https://valagamba.net`.
+To reproduce a Pages build locally:
+
+```sh
+SITE_URL=https://thejkane.github.io BASE_PATH=/valagamba/ npm run build
+```
+
+Keep new root-relative links and public image references wrapped in `withBase()`.
+Content files can keep their `/images/...` paths; rendering adds the deployment
+prefix. External GoDaddy media links and same-page anchors retain their addresses.
+GoDaddy hosting and DNS have not been changed.
+
+See [GitHub Pages workflow documentation](https://docs.github.com/en/pages/getting-started-with-github-pages/using-custom-workflows-with-github-pages).
 
 For future Codex sessions, start with [CODEX_HANDOFF.md](CODEX_HANDOFF.md).
 It records the current organization and overrides historical counts in migration

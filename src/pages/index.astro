@@ -1,4 +1,5 @@
 ---
+import { withBase } from '../utils/paths';
 import categories from '../data/categories.json';
 import SiteHeader from '../components/SiteHeader.astro';
 import SiteFooter from '../components/SiteFooter.astro';
@@ -14,12 +15,12 @@ const originalSite = 'https://valagamba.net';
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="description" content="වලගම්බා ආරණ්‍යවාසී අති පූජ්‍ය බෙල්ලන්විල ධම්මානන්ද ස්වාමින්වහන්සේගේ ධර්ම දේශනා එකතුව. Vipassana, mindfulness, Abhidhamma teachings and books." />
     <meta name="theme-color" content="#233e34" />
-    <link rel="canonical" href="https://valagamba.net/" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="canonical" href={new URL(withBase('/'), Astro.site).href} />
+    <link rel="icon" type="image/svg+xml" href={withBase('/favicon.svg')} />
     <meta property="og:title" content="වලගම්බා ආරණ්‍ය දේශනා · Valagamba" />
     <meta property="og:description" content="Lord Buddha’s Teachings, by Venerable Bellanwila Dhammananda Thero." />
     <meta property="og:type" content="website" />
-    <meta property="og:url" content="https://valagamba.net/" />
+    <meta property="og:url" content={new URL(withBase('/'), Astro.site).href} />
     <title>වලගම්බා ආරණ්‍ය දේශනා · Valagamba</title>
   </head>
   <body>
@@ -36,7 +37,7 @@ const originalSite = 'https://valagamba.net';
             <p class="hero-english" lang="en">Lord Buddha’s Teachings,<br />by Venerable Bellanwila Dhammananda Thero.</p>
             <div class="hero-actions">
               <a class="button button-primary" href="#teachings">දේශනා වෙත පිවිසෙන්න <span aria-hidden="true">↗</span></a>
-              <a class="text-link" href="/basic-vipassana/">මුලික විපස්සනා ක්‍රම <span aria-hidden="true">→</span></a>
+              <a class="text-link" href={withBase('/basic-vipassana/')}>මුලික විපස්සනා ක්‍රම <span aria-hidden="true">→</span></a>
             </div>
           </div>
           <figure class="hero-art">
@@ -65,7 +66,7 @@ const originalSite = 'https://valagamba.net';
           </div>
           <div class="category-grid">
             {categories.map((category, index) => (
-              <a class="category-card" href={category.local ? category.path : `${originalSite}${category.path}`} data-group={category.group} data-search={`${category.title} ${category.english}`}>
+              <a class="category-card" href={category.local ? withBase(category.path) : `${originalSite}${category.path}`} data-group={category.group} data-search={`${category.title} ${category.english}`}>
                 <span class="card-top"><span class="card-number" aria-hidden="true">{String(index + 1).padStart(2, '0')}</span><span class="card-arrow" aria-hidden="true">↗</span></span>
                 <h3>{category.title}</h3>
                 <p lang="en">{category.english}</p>
@@ -80,7 +81,7 @@ const originalSite = 'https://valagamba.net';
       <section class="resources" id="books" aria-labelledby="books-title">
         <div class="container resources-inner">
           <div class="book-illustration" aria-hidden="true"><span>වලගම්බා</span><span class="book-wheel">☸</span><span>විදර්ශනා කෘති</span></div>
-          <div class="resource-copy"><p class="eyebrow" lang="en">Read & reflect</p><h2 id="books-title">විශේෂ විදර්ශනා කෘති</h2><p>විදර්ශනා අධ්‍යයනය සඳහා කෘති එකතුව වෙත පිවිසෙන්න.</p><a class="button button-light" href="/books/">කෘති එකතුව <span aria-hidden="true">↗</span></a></div>
+          <div class="resource-copy"><p class="eyebrow" lang="en">Read & reflect</p><h2 id="books-title">විශේෂ විදර්ශනා කෘති</h2><p>විදර්ශනා අධ්‍යයනය සඳහා කෘති එකතුව වෙත පිවිසෙන්න.</p><a class="button button-light" href={withBase('/books/')}>කෘති එකතුව <span aria-hidden="true">↗</span></a></div>
           <span class="resource-decoration" aria-hidden="true">☸</span>
         </div>
       </section>
@@ -88,7 +89,7 @@ const originalSite = 'https://valagamba.net';
       <section class="about section-padding" id="about" aria-labelledby="about-title">
         <div class="container about-grid">
           <div><p class="eyebrow" lang="en">About this collection</p><h2 id="about-title">දේශනා එකතුව පිළිබඳව</h2></div>
-          <div><p class="about-lead">අති පූජ්‍ය බෙල්ලන්විල ධම්මානන්ද ස්වාමින්වහන්සේගේ ධර්ම දේශනා, විදර්ශනා අධ්‍යයනය සඳහා මෙසේ එක්තැන් කර ඇත.</p><p lang="en">A collection of Dhamma teachings by Venerable Bellanwila Dhammananda Thero of Eriyawa Valagamba Aranya.</p><a class="text-link" href="/about/">ප්‍රණාමය <span aria-hidden="true">↗</span></a></div>
+          <div><p class="about-lead">අති පූජ්‍ය බෙල්ලන්විල ධම්මානන්ද ස්වාමින්වහන්සේගේ ධර්ම දේශනා, විදර්ශනා අධ්‍යයනය සඳහා මෙසේ එක්තැන් කර ඇත.</p><p lang="en">A collection of Dhamma teachings by Venerable Bellanwila Dhammananda Thero of Eriyawa Valagamba Aranya.</p><a class="text-link" href={withBase('/about/')}>ප්‍රණාමය <span aria-hidden="true">↗</span></a></div>
         </div>
       </section>
     </main>
