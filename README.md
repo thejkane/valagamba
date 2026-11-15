@@ -1,5 +1,9 @@
 # Valagamba
 
+For future Codex sessions, start with [CODEX_HANDOFF.md](CODEX_HANDOFF.md).
+It records the current organization and overrides historical counts in migration
+notes where later editorial changes moved lessons between collections.
+
 Gallery is local at `/gallery/`, with 19 photos, responsive uncropped thumbnails,
 and a keyboard-accessible full-size viewer. Edit `src/content/gallery/aranya.md`
 to maintain the image sequence and descriptions. Images and thumbnails live in
