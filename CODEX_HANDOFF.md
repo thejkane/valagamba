@@ -5,16 +5,19 @@ files and Git status. This file describes the final state of the first working
 session; some migration notes and older README passages describe source counts
 before later user edits.
 
-## Subsequent update: GitLab CI
+## Subsequent update: GitHub Actions
 
-The user requested GitLab CI/CD for continuous builds. `.gitlab-ci.yml` now uses
-`node:24-bookworm-slim`, lockfile-based `npm ci`, npm download caching in `.npm/`,
-and `npm run build`. Successful `dist/` output is saved as a job artifact with a
-one-week expiry. Branch/tag pushes and merge requests trigger builds; an open MR
-suppresses the duplicate branch push pipeline. Manual web runs are supported.
-No hosting deployment job or credentials were added. GitLab Runner execution
-has not been verified from this workspace. GitLab is now an explicit requested
-CI destination; earlier GitHub recommendations below are historical plans.
+The user clarified that the remote repository is GitHub, not GitLab. The
+GitLab configuration was removed and replaced by `.github/workflows/build.yml`.
+It uses GitHub-hosted Ubuntu, Node 24, `npm ci`, lockfile-based npm caching,
+and `npm run build`. Successful `dist/` output is uploaded as a seven-day
+artifact. Pushes, pull requests, and manual dispatch trigger runs; newer runs
+cancel older in-progress runs for the same Git ref. Official checkout,
+setup-node, and upload-artifact actions are used, with read-only repository
+permissions. No custom secrets or hosting deployment job were added.
+GitHub-hosted execution has not yet been verified from this workspace; commit
+and push the workflow and check the Actions tab. Local YAML parsing and the
+production build were checked. GitHub is the current CI destination.
 
 ## Objective and agreed direction
 

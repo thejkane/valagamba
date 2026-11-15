@@ -1,25 +1,24 @@
 # Valagamba
 
-## GitLab continuous builds
+## GitHub continuous builds
 
-`.gitlab-ci.yml` builds the static site on branch/tag pushes and merge requests.
-When a branch has an open merge request, its push uses the merge request pipeline
-instead of creating a duplicate branch pipeline. Manual runs from GitLab's
-pipeline screen are also supported.
+`.github/workflows/build.yml` builds the static site on pushes and pull requests.
+Manual runs are available from the **Actions** tab once the workflow is on the
+repository's default branch. A newer run cancels an older in-progress run for
+that same branch or pull request.
 
-The job uses Node 24, installs the committed lockfile with `npm ci`, runs
-`npm run build`, and saves `dist/` as a downloadable artifact with a one-week
-expiry (GitLab may retain the latest successful artifact according to project
-settings). npm downloads are cached using a key based on `package-lock.json`.
+The job uses a GitHub-hosted Ubuntu runner and Node 24, installs the committed
+lockfile with `npm ci`, runs `npm run build`, and uploads `dist/` as an artifact
+retained for seven days. npm downloads are cached based on `package-lock.json`.
 
-To activate it, commit and push the configuration to your GitLab project and
-ensure the project has an available GitLab Runner supporting Docker images.
-View results under **Build > Pipelines** and download the `build_site` job's
-artifacts. No deployment credentials are needed. This pipeline builds artifacts;
-publishing them to GoDaddy, Cloudflare, or GitLab Pages is not configured.
+Commit and push the workflow to your GitHub repository, then open **Actions >
+Build site** to see the result. Download the `valagamba-<commit SHA>` artifact
+from a successful run. If Actions is disabled, enable it in **Settings > Actions >
+General**, allowing the official `actions/*` actions used by the workflow.
+No custom secrets or self-hosted runner are needed. Hosting deployment remains
+unconfigured; this workflow builds and stores the static website.
 
-The configuration follows [GitLab's CI/CD YAML documentation](https://docs.gitlab.com/ci/yaml/)
-and [npm caching guidance](https://docs.gitlab.com/ci/caching/#cache-nodejs-dependencies).
+See [GitHub's workflow syntax documentation](https://docs.github.com/en/actions/reference/workflows-and-actions/workflow-syntax).
 
 For future Codex sessions, start with [CODEX_HANDOFF.md](CODEX_HANDOFF.md).
 It records the current organization and overrides historical counts in migration
